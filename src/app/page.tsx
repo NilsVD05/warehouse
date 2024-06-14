@@ -2,6 +2,8 @@
 import {useState} from 'react'
 import styles from './page.module.css';
 import UserProfileForm from './UserProfileForm';
+import DocumentList from './DocumentList';
+import Auswahl from "@/app/Auswahl";
 
 export default function LoginForm() {
     const [email, setEmail] = useState('');
@@ -23,7 +25,7 @@ export default function LoginForm() {
         }).catch(error => setError(error || 'Login failed'));
     }
 if (logedIn) {
-    return <UserProfileForm/>
+    return <Auswahl />
 }
 
     return (<div className={styles.container}>
