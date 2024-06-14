@@ -1,95 +1,44 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client'
+import {useState} from 'react'
+import styles from './page.module.css';
+import UserProfileForm from './UserProfileForm';
 
-export default function Home() {
-  return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+export default function LoginForm() {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [logedIn, setLogedIn] = useState(false);
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+    const handleSubmit = async (event: any) => {
+        event.preventDefault();
+        setError('');
+        fetch('http://localhost:8080/auth/login', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json',},
+            body: JSON.stringify({username:email, password}),
+        }).then(response => response.json()).then(data => {
+            sessionStorage.setItem('token', data.jwt);
+            setLogedIn(true);
+        }).catch(error => setError(error || 'Login failed'));
+    }
+if (logedIn) {
+    return <UserProfileForm/>
+}
 
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  );
+    return (<div className={styles.container}>
+        <form onSubmit={handleSubmit} className={styles.form}><h2 className={styles.title}>Sign In Form</h2>
+            <div className={styles.field}><label htmlFor="email">Username</label> <input id="email"
+                                                                                              name="email" value={email}
+                                                                                              onChange={(e) => setEmail(e.target.value)}
+                                                                                              required/></div>
+            <div className={styles.field}><label htmlFor="password">Password</label> <input type="password"
+                                                                                            id="password"
+                                                                                            name="password"
+                                                                                            value={password}
+                                                                                            onChange={(e) => setPassword(e.target.value)}
+                                                                                            required/></div>
+            {error && <p className={styles.error}>          {JSON.stringify(error)}        </p>}
+            <button type="submit" className={styles.button}>sign in</button>
+        </form>
+    </div>)
 }
